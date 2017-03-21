@@ -22,6 +22,7 @@ public class Spacecraft extends Actor {
 
     // Paràmetres de la spacecraft
     private Vector2 position;
+    private float touchedVerticalPosition;
     private int width, height;
     private int direction;
     private Stage currentStage;
@@ -43,7 +44,8 @@ public class Spacecraft extends Actor {
 
         // Inicialitzem la spacecraft a l'estat normal
         direction = SPACECRAFT_STRAIGHT;
-
+        //Inicialitzem la posició de la nau amb la posició inicial;
+        touchedVerticalPosition = position.y;
 
         // Creem el rectangle de col·lisions
         collisionRect = new Rectangle();
@@ -56,7 +58,7 @@ public class Spacecraft extends Actor {
     public void act(float delta) {
 
         super.act(delta);
-
+        /*
         switch (direction) {
             case SPACECRAFT_UP:
                 if (this.position.y - Settings.SPACECRAFT_VELOCITY * delta >= 0) {
@@ -70,6 +72,31 @@ public class Spacecraft extends Actor {
                 break;
             case SPACECRAFT_STRAIGHT:
                 break;
+        }*/
+
+        //Obté la posició vertical de desti de l'input handler i es mourà tota l0'estona cap a ella
+        //!! Per alguna raó quan arriba al seu destí i el dit no s'ha retirat alterna molt rapidament
+        //entre moures cap amunt i cap avall, no dificulta la jugabilitat pero la textura de la nau
+        //canvia molt rapidament i pot ser molest
+
+        //Si el touch esta per sobre de la nau...
+        if(position.y > touchedVerticalPosition){
+
+            //La movem cap amunt
+            direction = SPACECRAFT_UP;
+            if (this.position.y - Settings.SPACECRAFT_VELOCITY * delta >= 0) {
+                this.position.y -= Settings.SPACECRAFT_VELOCITY * delta;
+            }
+
+        } else if (position.y < touchedVerticalPosition) {
+            //Si es per sota la movem cap avall
+            direction = SPACECRAFT_DOWN;
+            if (this.position.y + height + Settings.SPACECRAFT_VELOCITY * delta <= Settings.GAME_HEIGHT) {
+                this.position.y += Settings.SPACECRAFT_VELOCITY * delta;
+            }
+
+        } else {
+            goStraight();
         }
 
         collisionRect.set(position.x, position.y + 3, width, 10);
@@ -107,6 +134,7 @@ public class Spacecraft extends Actor {
     // Posem la spacecraft al seu estat original
     public void goStraight() {
         direction = SPACECRAFT_STRAIGHT;
+        touchedVerticalPosition = position.y;
     }
 
     public void shoot(){
@@ -116,7 +144,7 @@ public class Spacecraft extends Actor {
     }
 
     public void shoot(Vector2 touchedPosition){
-
+        //Creem un projectil
         currentStage.addActor(new Projectile(position.x + width, position.y + height / 2, Settings.PROJECTILE_WIDTH, Settings.PROJECTILE_HEIGHT, scrollHandler, touchedPosition));
 
     }
@@ -155,5 +183,13 @@ public class Spacecraft extends Actor {
 
     public Rectangle getCollisionRect() {
         return collisionRect;
+    }
+
+    public void setVerticalPosition(float y){
+        touchedVerticalPosition = y;
+    }
+
+    public float getPosicioVertical () {
+        return position.y;
     }
 }

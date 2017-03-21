@@ -34,7 +34,11 @@ public class AssetManager {
 
     // Font
     public static BitmapFont font;
+    public static BitmapFont scoreFont;
 
+    // Botó
+
+    public static TextureRegion button;
 
     public static void load() {
         // Carreguem les textures i li apliquem el mètode d'escalat 'nearest'
@@ -50,6 +54,8 @@ public class AssetManager {
 
         spacecraftDown = new TextureRegion(sheet, 72, 0, 36, 15);
         spacecraftDown.flip(false, true);
+
+        button = new TextureRegion(sheet, 480,285, 64, 27);
 
         //
         projectile = new TextureRegion(sheet, 108, 0, 20, 13);
@@ -100,6 +106,8 @@ public class AssetManager {
         FileHandle fontFile = Gdx.files.internal("fonts/space.fnt");
         font = new BitmapFont(fontFile, true);
         font.getData().setScale(0.4f);
+        scoreFont = new BitmapFont(fontFile, true);
+        scoreFont.getData().setScale(0.2f);
     }
 
     public static void dispose() {

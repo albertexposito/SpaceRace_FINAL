@@ -1,10 +1,8 @@
 package cat.xtec.ioc.objects;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 
@@ -20,7 +18,7 @@ public class Asteroid extends Scrollable {
 
     Random r;
 
-    final int anguloDiagonal = 80;
+    final int diagAngle = 120;
     int assetAsteroid;
     float verticalVelocity;
 
@@ -45,7 +43,9 @@ public class Asteroid extends Scrollable {
         /* Accions */
         r = new Random();
         assetAsteroid = r.nextInt(15);
-        verticalVelocity = r.nextFloat() * anguloDiagonal - anguloDiagonal / 2;
+
+        //Obtenim l'angle aleatori de l'asteroid, al ser 120, donarà un angle entre -60 i 60
+        verticalVelocity = r.nextFloat() * diagAngle - diagAngle / 2;
 
         setOrigin();
 
@@ -78,6 +78,7 @@ public class Asteroid extends Scrollable {
     public void act(float delta) {
         super.act(delta);
 
+        //Actualitzem la posició vertical a partir de l'angle aleatori
         position.y += verticalVelocity * delta;
 
         // Actualitzem el cercle de col·lisions (punt central de l'asteroid i el radi.
@@ -92,13 +93,14 @@ public class Asteroid extends Scrollable {
     @Override
     public void reset(float newX) {
         super.reset(newX);
-        // Obtenim un número al·leatori entre MIN i MAX
 
         setVisible(true);
         destroyed = false;
 
+        // Obtenim un número al·leatori entre MIN i MAX
         float newSize = Methods.randomFloat(Settings.MIN_ASTEROID, Settings.MAX_ASTEROID);
 
+        //La nau tindra tants punts de vida com el valor del truncament de la seva mida inicial
         hitPoints = (int)newSize;
 
         // Modificarem l'alçada i l'amplada segons l'al·leatori anterior
@@ -110,15 +112,18 @@ public class Asteroid extends Scrollable {
         verticalVelocity = r.nextFloat() * 40 - 20;
         setOrigin();
     }
-
+    //Restem 1 punt de vida a l'asteroid
     public void hit(){
         this.hitPoints--;
        // this.width -= 1*17;
        // this.height -= 1*17;
     }
 
+    //"Destruim" l'asteroid desactivant la colisió i la visibilitat, quan es cridi al metode reset
+    //Tornaran al seu estat inicial.
     public void destroy() {
         destroyed = true;
+        scrollHandler.puntuacio += this.width;
         this.setVisible(false);
     }
 
@@ -137,18 +142,17 @@ public class Asteroid extends Scrollable {
     // Retorna true si hi ha col·lisió
     public boolean collides(Spacecraft nau) {
 
-        //    if (position.x <= nau.getX() + nau.getWidth()) {
-        // Comprovem si han col·lisionat sempre i quan l'asteroid estigui a la mateixa alçada que la spacecraft
-        if (false)
+        //Si l'asteroid ha sigut destruit, bloquejem la seva colisio amb la nau
+        if (!destroyed)
             return (Intersector.overlaps(collisionCircle, nau.getCollisionRect()));
         else
             return false;
-        //  }
-        //   return false;
+
     }
 
     public boolean collides(Projectile projectile) {
 
+        //Si l'asteroid ha sigut destruit, bloquejem la seva colisio amb projectils
         if (!destroyed)
             return (Intersector.overlaps(collisionCircle, projectile.getCollisionRect()));
         else

@@ -7,7 +7,7 @@ public class Settings {
     public static final int GAME_HEIGHT = 135;
 
     // Propietats de la nau
-    public static final float SPACECRAFT_VELOCITY = 50;
+    public static final float SPACECRAFT_VELOCITY = 150;
     public static final float SPACECRAFT_VELOCITY_X = 50;
     public static final int SPACECRAFT_WIDTH = 36;
     public static final int SPACECRAFT_HEIGHT = 15;
@@ -25,8 +25,14 @@ public class Settings {
     public static final float MIN_ASTEROID = 1f;
 
     // Configuració Scrollable
-    public static final int ASTEROID_SPEED = -150;
-    public static final int ASTEROID_GAP = 75;
+    public static final int ASTEROID_SPEED_EASY = -150;
+    public static final int ASTEROID_SPEED_MED = -200;
+    public static final int ASTEROID_SPEED_HARD = -350;
+
+    public static final int ASTEROID_GAP_EASY = 75;
+    public static final int ASTEROID_GAP_MED = 55;
+    public static final int ASTEROID_GAP_HARD = 30;
+
     public static final int BG_SPEED = -300;
 
 

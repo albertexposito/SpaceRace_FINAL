@@ -35,23 +35,30 @@ public class Projectile extends Actor {
         this.width = width;
         this.height = height;
 
+        //Origen (Extrem de la nau)
         source = new Vector2(x, y);
-
-        vector = new Vector2(Math.abs(target.x - source.x), Math.abs(target.y - source.y));
         this.target = target;
-        relVector = 1/(vector.x + vector.y);
 
+        //Vector absolut de les coordenades d'origen y destí(punt de la pantalla clicat)
+        vector = new Vector2(Math.abs(target.x - source.x), Math.abs(target.y - source.y));
+
+        //A partir del vector y la velocitat total obtenim la velocitat vertical i horitzontal del projectil
+        relVector = 1/(vector.x + vector.y);
         velocityX = relVector * vector.x * Settings.PROJECTILE_VELOCITY;
         velocityY = relVector * vector.y * Settings.PROJECTILE_VELOCITY;
 
+        //utilitzem l'arcosinus per obtenir l'angle del projectil
+        rotation =  (float)(Math.acos(relVector * vector.x) * 180.0d/Math.PI);
+
+        //Al ser el vector absolut l'hem de multiplicar la valocitat i l'angle per -1 en cas que l'alçada sigui negativa
         if(target.y < source.y){
             velocityY *=-1;
-
+            rotation *=-1;
         }
 
         Gdx.app.log("velocidad", " | y = " + relVector * vector.x + " | angle = " + Math.acos(relVector * vector.x) * 180.0d/Math.PI );
 
-        rotation =  (float)(Math.acos(relVector * vector.x) * 180.0d/Math.PI);
+
 
         collisionRect = new Rectangle();
         //velocityX = Settings.PROJECTILE_VELOCITY;
@@ -90,14 +97,15 @@ public class Projectile extends Actor {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-       batch.draw(AssetManager.projectile, source.x, source.y, width, height );
-//	draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height, float scaleX, float scaleY, float rotation)
-
-        /*batch.draw(AssetManager.projectile, source.x, source.y, 0 , 0,
-                width, height, 1, 1, rotation);*/
+       //batch.draw(AssetManager.projectile, source.x, source.y, width, height );
+        //	draw(TextureRegion region, float x, float y, float originX, float originY, float width, float height, float scaleX, float scaleY, float rotation)
+        //dibuixar projectil amb rotacio (No funcional)
+        batch.draw(AssetManager.projectile, source.x, source.y, 0 , 5,
+                width, height, 1, 1, rotation);
     }
 
     public boolean collides(ArrayList<Asteroid> asteroids) {
+        //Obtenim els asteroids de la classe scrollHandler i comprovem que aquest projectil no esta colisionant amb cap.
         for (Asteroid asteroid : asteroids) {
 
             if (asteroid.collides(this)) {

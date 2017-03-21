@@ -43,11 +43,12 @@ public class GameScreen implements Screen {
 
     // Preparem el textLayout per escriure text
     private GlyphLayout textLayout;
+    private GlyphLayout scoreLayout;
 
-    public GameScreen(Batch prevBatch, Viewport prevViewport) {
+    public GameScreen(Batch prevBatch, Viewport prevViewport, int dificultat) {
 
         // Iniciem la música
-        AssetManager.music.play();
+        //AssetManager.music.play();
 
         // Creem el ShapeRenderer
         shapeRenderer = new ShapeRenderer();
@@ -58,7 +59,7 @@ public class GameScreen implements Screen {
         batch = stage.getBatch();
 
         // Creem la nau i la resta d'objectes
-        scrollHandler = new ScrollHandler();
+        scrollHandler = new ScrollHandler(dificultat);
         spacecraft = new Spacecraft(Settings.SPACECRAFT_STARTX, Settings.SPACECRAFT_STARTY, Settings.SPACECRAFT_WIDTH, Settings.SPACECRAFT_HEIGHT, stage, scrollHandler);
 
 
@@ -71,6 +72,9 @@ public class GameScreen implements Screen {
         // Iniciem el GlyphLayout
         textLayout = new GlyphLayout();
         textLayout.setText(AssetManager.font, "Are you\nready?");
+
+        scoreLayout = new GlyphLayout();
+        scoreLayout.setText(AssetManager.scoreFont, "score: " + scrollHandler.getPuntuacio());
 
         currentState = GameState.READY;
 
@@ -166,13 +170,19 @@ public class GameScreen implements Screen {
     private void updateRunning(float delta) {
         stage.act(delta);
 
+        batch.begin();
+        scoreLayout.setText(AssetManager.font,"score: " + scrollHandler.getPuntuacio());
+        AssetManager.scoreFont.draw(batch, scoreLayout, 0,scoreLayout.height);
+        batch.end();
+
         if (scrollHandler.collides(spacecraft)) {
             // Si hi ha hagut col·lisió: Reproduïm l'explosió i posem l'estat a GameOver
             AssetManager.explosionSound.play();
             stage.getRoot().findActor("spacecraft").remove();
-            textLayout.setText(AssetManager.font, "Game Over :'(");
+            textLayout.setText(AssetManager.font, "Game Over :'( \n score = " + scrollHandler.getPuntuacio());
             currentState = GameState.GAMEOVER;
         }
+
     }
 
     private void updateGameOver(float delta) {
@@ -203,6 +213,7 @@ public class GameScreen implements Screen {
 
         // Posem a 0 les variables per controlar el temps jugat i l'animació de l'explosió
         explosionTime = 0.0f;
+        scrollHandler.reiniciarPartida();
 
     }
 
